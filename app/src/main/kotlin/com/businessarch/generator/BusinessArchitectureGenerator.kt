@@ -31,7 +31,7 @@ class BusinessArchitectureGenerator {
             
             // Применяем компоновку с помощью LayoutManager
             layoutManager.applyHierarchicalLayout(parsedData.regions)
-            layoutManager.layoutSystemsWithoutRegion(parsedData.systemsWithoutRegion, parsedData.regions)
+            val platformsWithoutRegion = layoutManager.layoutSystemsWithoutRegion(parsedData.systemsWithoutRegion, parsedData.regions)
             println("Применена иерархическая компоновка бизнес-архитектуры")
             
             // Инициализируем пространственную карту в ConnectionRouter
@@ -48,7 +48,8 @@ class BusinessArchitectureGenerator {
                 connections = spatialAnalysis.connections,
                 systemMap = parsedData.systemMap,
                 systemsWithoutRegion = parsedData.systemsWithoutRegion,
-                spatialAnalysis = spatialAnalysis
+                spatialAnalysis = spatialAnalysis,
+                platformsWithoutRegion = platformsWithoutRegion
             )
             println("SVG бизнес-архитектуры сгенерирован")
             
@@ -82,10 +83,11 @@ class BusinessArchitectureGenerator {
         connections: List<Connection>,
         systemMap: Map<String, System>,
         systemsWithoutRegion: List<System> = emptyList(),
-        spatialAnalysis: SpatialAnalysisResult? = null
+        spatialAnalysis: SpatialAnalysisResult? = null,
+        platformsWithoutRegion: List<Platform> = emptyList()
     ): String {
         // Генерируем базовый SVG с помощью SvgRenderer
-        val svg = svgRenderer.generateHierarchicalSVG(regions, connections, systemMap, systemsWithoutRegion, spatialAnalysis)
+        val svg = svgRenderer.generateHierarchicalSVG(regions, connections, systemMap, systemsWithoutRegion, spatialAnalysis, platformsWithoutRegion)
         
         // Добавляем связи в SVG
         val svgWithoutClosingTag = svg.replace("</svg>", "")

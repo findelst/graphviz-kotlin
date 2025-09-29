@@ -5,16 +5,20 @@ import com.businessarch.generator.modules.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 
 /**
- * Тесты для проверки корректности формирования стрелочек
+ * Тестирование корректности формирования стрелок и соединений
+ * Группировка тестов по функциональности для лучшей читаемости
  */
+@DisplayName("Тестирование формирования стрелок")
 class ArrowFormationTest {
-    
+
     private lateinit var connectionRouter: ConnectionRouter
     private lateinit var connectionManager: ConnectionManager
     private lateinit var svgRenderer: SvgRenderer
-    
+
     @BeforeEach
     fun setUp() {
         connectionRouter = ConnectionRouter()

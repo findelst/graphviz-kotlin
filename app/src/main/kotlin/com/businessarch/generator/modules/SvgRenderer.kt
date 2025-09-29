@@ -21,7 +21,8 @@ class SvgRenderer {
         connections: List<Connection>,
         systemMap: Map<String, System>,
         systemsWithoutRegion: List<System> = emptyList(),
-        spatialAnalysis: Any? = null
+        spatialAnalysis: Any? = null,
+        platformsWithoutRegion: List<Platform> = emptyList()
     ): String {
         // Рассчитываем размеры canvas с учетом систем без региона
         var maxX = if (regions.isNotEmpty()) regions.maxOf { it.x + it.width } + 50 else 50.0
@@ -38,11 +39,19 @@ class SvgRenderer {
             }
         }
 
+        // Учитываем платформы без региона
+        if (platformsWithoutRegion.isNotEmpty()) {
+            val maxPlatformX = platformsWithoutRegion.maxOf { it.x + it.width }
+            val maxPlatformY = platformsWithoutRegion.maxOf { it.y + it.height }
+            maxX = max(maxX, maxPlatformX + 50)
+            maxY = max(maxY, maxPlatformY + 50)
+        }
+
         var svg = """<svg width="${maxX.toInt()}" height="${maxY.toInt()}" xmlns="http://www.w3.org/2000/svg">"""
-        
+
         // Добавляем стили
         svg += getHierarchicalStyles()
-        
+
         // Добавляем маркеры для стрелок
         svg += getArrowMarkers()
 
@@ -51,9 +60,16 @@ class SvgRenderer {
             svg += renderRegion(region)
         }
 
-        // Рендерим системы без региона напрямую
-        systemsWithoutRegion.forEach { system ->
-            svg += renderHierarchicalSystem(system)
+        // Рендерим платформы без региона
+        platformsWithoutRegion.forEach { platform ->
+            svg += renderPlatform(platform)
+        }
+
+        // Рендерим системы без региона напрямую (только если нет платформ)
+        if (platformsWithoutRegion.isEmpty()) {
+            systemsWithoutRegion.forEach { system ->
+                svg += renderHierarchicalSystem(system)
+            }
         }
 
         svg += "</svg>"

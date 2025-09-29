@@ -27,6 +27,14 @@ class ConnectionRouter {
     private fun initializeRules(): List<RoutingRule> {
         return listOf(
             RoutingRule(
+                name = "internal_system_connection",
+                description = "Связь внутри одной системы между FP - петля с правой стороны",
+                condition = { _, _, context ->
+                    context.connectionType == "internal"
+                },
+                strategy = "internal_loop"
+            ),
+            RoutingRule(
                 name = "adjacent_systems_direct",
                 description = "Соседние системы без препятствий - прямое соединение",
                 condition = { source, target, context ->
@@ -95,6 +103,7 @@ class ConnectionRouter {
         
         // Применяем стратегию маршрутизации
         return when (applicableRule.strategy) {
+            "internal_loop" -> createInternalLoopRoute(source, target, fullContext)
             "direct_connection" -> createDirectRoute(source, target, fullContext)
             "intra_region_bypass" -> createIntraRegionBypassRoute(source, target, fullContext)
             "inter_region_bypass" -> createInterRegionBypassRoute(source, target, fullContext)
@@ -107,6 +116,11 @@ class ConnectionRouter {
      * Определяет тип соединения между системами
      */
     private fun determineConnectionType(source: System, target: System): String {
+        // Проверяем, связь внутри одной системы (между FP одной АС)
+        if (source.name == target.name) {
+            return "internal"
+        }
+
         // Проверяем, являются ли системы внешними
         if (source.platform == "Внешняя АС" || target.platform == "Внешняя АС") {
             return "external"
@@ -270,6 +284,46 @@ class ConnectionRouter {
      */
     private fun createDefaultRoute(source: System, target: System, context: RoutingContext): RouteResult {
         return createDirectRoute(source, target, context)
+    }
+
+    /**
+     * Создает петлю для связи внутри одной системы
+     */
+    private fun createInternalLoopRoute(source: System, target: System, context: RoutingContext): RouteResult {
+        // Для внутренних связей используем правую сторону системы
+        val systemCenterY = source.y + source.height / 2
+        val rightEdge = source.x + source.width
+
+        // Определяем высоту выхода и входа на основе контекста параллельных соединений
+        val outgoingOffset = context.parallelContext.outgoingIndex * outgoingSpacing
+        val incomingOffset = context.parallelContext.incomingIndex * outgoingSpacing
+
+        val sourcePoint = Point(x = rightEdge, y = systemCenterY + outgoingOffset)
+        val targetPoint = Point(x = rightEdge, y = systemCenterY + incomingOffset)
+
+        // Создаем петлю справа от системы
+        val loopWidth = 20.0 // Ширина петли
+        val loopX = rightEdge + loopWidth
+
+        // Определяем точки петли
+        val waypoints = listOf(
+            sourcePoint,
+            Point(x = loopX, y = sourcePoint.y), // Горизонтальный выход
+            Point(x = loopX, y = targetPoint.y), // Вертикальный переход
+            Point(x = rightEdge, y = targetPoint.y) // Горизонтальный вход
+        )
+
+        val path = buildPathFromWaypoints(waypoints)
+
+        // Позиция метки в середине петли
+        val labelPosition = Point(
+            x = loopX + 10,
+            y = (sourcePoint.y + targetPoint.y) / 2
+        )
+
+        println("🔄 Создана внутрисистемная петля для: ${source.name}")
+
+        return RouteResult(path = "", labelPosition = labelPosition)
     }
 
     /**

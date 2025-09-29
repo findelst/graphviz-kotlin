@@ -156,12 +156,5 @@ class App {
 
 fun main(args: Array<String>) = runBlocking {
     val app = App()
-    
-    if (args.isNotEmpty()) {
-        // Если передан аргумент - обрабатываем файл
-        app.loadAndProcess(args[0])
-    } else {
-        // Иначе запускаем демо
-        app.runDemo()
-    }
+    app.loadAndProcess("./new-data.json")
 }

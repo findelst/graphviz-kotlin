@@ -70,10 +70,11 @@ class LayoutManager {
     }
 
     /**
-     * Размещает системы без региона
+     * Размещает системы без региона, группируя их по платформам
+     * @return Список созданных платформ для систем без регионов
      */
-    fun layoutSystemsWithoutRegion(systemsWithoutRegion: List<System>, regions: List<Region>) {
-        if (systemsWithoutRegion.isEmpty()) return
+    fun layoutSystemsWithoutRegion(systemsWithoutRegion: List<System>, regions: List<Region>): List<Platform> {
+        if (systemsWithoutRegion.isEmpty()) return emptyList()
 
         // Находим максимальную X координату существующих регионов
         var maxRegionX = 50.0 // Минимальное значение по умолчанию
@@ -81,15 +82,58 @@ class LayoutManager {
             maxRegionX = max(maxRegionX, region.x + region.width)
         }
 
-        // Размещаем системы без региона справа от всех регионов
-        var currentY = 50.0
-        val startX = maxRegionX + 50
+        // Группируем системы по платформам
+        val systemsByPlatform = systemsWithoutRegion.groupBy { it.platform }
 
-        systemsWithoutRegion.forEach { system ->
-            system.x = startX
-            system.y = currentY
-            currentY += system.height + 30 // Отступ между системами
+        var currentPlatformX = maxRegionX + 50 // Начальная позиция для первой платформы
+        val platformY = 50.0 // Одинаковая Y координата для всех платформ
+        val platformPadding = 30.0
+        val systemPadding = 20.0
+
+        val createdPlatforms = mutableListOf<Platform>()
+
+        systemsByPlatform.forEach { (platformName, systems) ->
+            // Размещаем системы внутри платформы вертикально
+            var currentSystemY = platformY + 40 // Место для заголовка платформы
+            var maxSystemWidth = 0.0
+            var totalPlatformHeight = 0.0
+
+            systems.forEach { system ->
+                // Обновляем высоту системы с учетом функций
+                if (system.functions.isNotEmpty()) {
+                    val functionsBlockHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + 10 * 2
+                    system.height = max(system.height, 80.0 + functionsBlockHeight)
+                }
+
+                system.x = currentPlatformX + platformPadding
+                system.y = currentSystemY
+
+                currentSystemY += system.height + systemPadding
+                maxSystemWidth = max(maxSystemWidth, system.width)
+                totalPlatformHeight += system.height + systemPadding
+            }
+
+            // Вычисляем размеры платформы
+            val platformWidth = max(maxSystemWidth + platformPadding * 2, 200.0)
+            val platformHeight = totalPlatformHeight + 50 // Заголовок + отступы
+
+            // Создаем объект Platform
+            val platform = Platform(
+                name = platformName,
+                systems = systems.toMutableList(),
+                x = currentPlatformX,
+                y = platformY,
+                width = platformWidth,
+                height = platformHeight
+            )
+
+            createdPlatforms.add(platform)
+
+            // Переходим к следующей платформе
+            currentPlatformX += platformWidth + 50
         }
+
+        return createdPlatforms
     }
 
     /**
