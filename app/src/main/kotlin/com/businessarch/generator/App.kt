@@ -156,5 +156,5 @@ class App {
 
 fun main(args: Array<String>) = runBlocking {
     val app = App()
-    app.loadAndProcess("./new-data.json")
+    app.loadAndProcess("../test-data.json")
 }

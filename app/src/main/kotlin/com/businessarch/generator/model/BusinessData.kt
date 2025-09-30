@@ -92,10 +92,21 @@ data class System(
     val region: String?,
     val role: List<String>,
     val functions: MutableList<Function>,
+    val functionalPlatforms: MutableList<FunctionalPlatform> = mutableListOf(),
     var x: Double = 0.0,
     var y: Double = 0.0,
     var width: Double = 320.0,
     var height: Double = 80.0
+)
+
+data class FunctionalPlatform(
+    val id: String,
+    val name: String,
+    val functions: MutableList<Function>,
+    var x: Double = 0.0,
+    var y: Double = 0.0,
+    var width: Double = 280.0,
+    var height: Double = 60.0
 )
 
 data class Function(

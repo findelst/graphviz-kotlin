@@ -1,0 +1,180 @@
+<svg width="3110" height="1030" xmlns="http://www.w3.org/2000/svg"><style>
+  .region-bg {
+    fill: #ffffff;
+    stroke: #333333;
+    stroke-width: 3;
+    stroke-dasharray: 8,4;
+    rx: 12;
+  }
+  .region-title {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    fill: #333333;
+  }
+  .platform-bg {
+    fill: #fff3e0;
+    stroke: #ffcc02;
+    stroke-width: 2;
+    rx: 8;
+  }
+  .platform-title {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    fill: #e65100;
+  }
+  .business-system {
+    fill: #f1f8e9;
+    stroke: #8bc34a;
+    stroke-width: 2;
+    rx: 8;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+  }
+  .business-system-external {
+    fill: #e8f5e8;
+    stroke: #66bb6a;
+    stroke-width: 2;
+    rx: 8;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+  }
+  .business-system-product {
+    fill: #e3f2fd;
+    stroke: #42a5f5;
+    stroke-width: 2;
+    rx: 8;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+  }
+  .business-system-sales {
+    fill: #fce4ec;
+    stroke: #ec407a;
+    stroke-width: 2;
+    rx: 8;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+  }
+  .business-system-title {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    fill: #37474f;
+  }
+  .functions-block {
+    fill: #f3e5f5;
+    stroke: #ba68c8;
+    stroke-width: 1;
+    rx: 6;
+  }
+  .functions-title {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    fill: #6a1b9a;
+  }
+  .function-item {
+    fill: #f8bbd9;
+    stroke: #f48fb1;
+    stroke-width: 1;
+    rx: 4;
+  }
+  .function-text {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 10px;
+    fill: #4a148c;
+    font-weight: 500;
+  }
+  .business-connection {
+    stroke: #999999;
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrowhead-business);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 5,5;
+  }
+  .business-connection-diagonal {
+    stroke: #ff6b35;
+    stroke-width: 2.5;
+    fill: none;
+    marker-end: url(#arrowhead-business);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 8,3;
+  }
+  .business-connection-close {
+    stroke: #4ecdc4;
+    stroke-width: 3;
+    fill: none;
+    marker-end: url(#arrowhead-business);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 3,2;
+  }
+  .business-connection-external {
+    stroke: #999999;
+    stroke-width: 2;
+    fill: none;
+    marker-end: url(#arrowhead-external);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 5,5;
+  }
+  .connection-label-bg {
+    fill: rgba(255,255,255,0.95);
+    stroke: #666;
+    stroke-width: 1;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+  }
+  .connection-label-text {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    fill: #333;
+  }
+  .fp-block {
+    fill: #e3f2fd;
+    stroke: #42a5f5;
+    stroke-width: 1;
+    stroke-dasharray: none;
+    rx: 6;
+  }
+  .fp-title {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    fill: #1e3a5f;
+  }
+  .fp-function-item {
+    fill: #f8bbd9;
+    stroke: #f48fb1;
+    stroke-width: 1;
+    rx: 4;
+  }
+  .fp-function-text {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 10px;
+    fill: #4a148c;
+    font-weight: 500;
+  }
+</style><defs>
+  <marker id="arrowhead-business" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#999999" stroke="#999999" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-inter-region" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#999999" stroke="#999999" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-inter-platform" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#999999" stroke="#999999" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-intra-platform" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#999999" stroke="#999999" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-external" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#999999" stroke="#999999" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-horizontal" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#333" stroke="#333" stroke-width="1" />
+  </marker>
+  <marker id="arrowhead-vertical" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+    <polygon points="0 0, 12 5, 0 10" fill="#333" stroke="#333" stroke-width="1" />
+  </marker>
+</defs><g class="platform"><rect x="100.0" y="50.0" width="380.0" height="195.0" class="platform-bg" /><text x="115.0" y="70.0" class="platform-title">ЕФС ФЛ</text><g class="system"><rect x="130.0" y="90.0" width="320.0" height="125.0" class="business-system-sales" /><text x="140.0" y="108.0" class="business-system-title">ЕФС ФЛ СБОЛ Про</text><rect x="140.0" y="126.0" width="300.0" height="70.0" class="functions-block" /><text x="145.0" y="146.0" class="functions-title">Функции:</text><rect x="145.0" y="151.0" width="290.0" height="30.0" class="function-item" /><text x="150.0" y="166.0" class="function-text">Предоставление продукта</text></g></g><g class="platform"><rect x="530.0" y="50.0" width="380.0" height="295.0" class="platform-bg" /><text x="545.0" y="70.0" class="platform-title">ЕФС Сотрудники</text><g class="system"><rect x="560.0" y="90.0" width="320.0" height="125.0" class="business-system-sales" /><text x="570.0" y="108.0" class="business-system-title">ЕФС Сотрудники ЕСЗК</text><rect x="570.0" y="126.0" width="300.0" height="70.0" class="functions-block" /><text x="575.0" y="146.0" class="functions-title">Функции:</text><rect x="575.0" y="151.0" width="290.0" height="30.0" class="function-item" /><text x="580.0" y="166.0" class="function-text">Предоставление продукта</text></g><g class="system"><rect x="560.0" y="235.0" width="320.0" height="80.0" class="business-system" /><text x="570.0" y="253.0" class="business-system-title">ЕФС.Сотрудники.РМ ОЦ</text></g></g><g class="platform"><rect x="960.0" y="50.0" width="380.0" height="585.0" class="platform-bg" /><text x="975.0" y="70.0" class="platform-title">ППРБ ФЛ</text><g class="system"><rect x="990.0" y="90.0" width="320.0" height="125.0" class="business-system" /><text x="1000.0" y="108.0" class="business-system-title">ППРБ.РБ.Единый профиль клиента</text><rect x="1000.0" y="126.0" width="300.0" height="52.0" class="fp-block" /><text x="1005.0" y="143.0" class="fp-title">ППРБ.РБ.ЕПК РБ.ФП Распространение профиля</text><text x="1005.0" y="159.0" class="fp-title">клиента</text></g><g class="system"><rect x="990.0" y="235.0" width="320.0" height="125.0" class="business-system" /><text x="1000.0" y="253.0" class="business-system-title">ППРБ.ФЛ.Госуслуги</text><rect x="1000.0" y="271.0" width="300.0" height="36.0" class="fp-block" /><text x="1005.0" y="288.0" class="fp-title">ППРБ.ФЛ.Госуслуги.ЦПГ</text></g><g class="system"><rect x="990.0" y="380.0" width="320.0" height="80.0" class="business-system" /><text x="1000.0" y="398.0" class="business-system-title">ППРБ РБ Кросс-продуктовый профиль Клиента</text></g><g class="system"><rect x="990.0" y="480.0" width="320.0" height="125.0" class="business-system" /><text x="1000.0" y="498.0" class="business-system-title">ППРБ Свод продуктовых событий</text><rect x="1000.0" y="516.0" width="300.0" height="70.0" class="functions-block" /><text x="1005.0" y="536.0" class="functions-title">Функции:</text><rect x="1005.0" y="541.0" width="290.0" height="30.0" class="function-item" /><text x="1010.0" y="556.0" class="function-text">Сбор итогового продуктового события</text></g></g><g class="platform"><rect x="1390.0" y="50.0" width="380.0" height="785.0" class="platform-bg" /><text x="1405.0" y="70.0" class="platform-title">Не указана</text><g class="system"><rect x="1420.0" y="90.0" width="320.0" height="80.0" class="business-system" /><text x="1430.0" y="108.0" class="business-system-title">Интеграционная платформа РБ</text></g><g class="system"><rect x="1420.0" y="190.0" width="320.0" height="80.0" class="business-system" /><text x="1430.0" y="208.0" class="business-system-title">КСШ.Synapse</text></g><g class="system"><rect x="1420.0" y="290.0" width="320.0" height="80.0" class="business-system" /><text x="1430.0" y="308.0" class="business-system-title">Synapse Событийный сегмент Процессинга</text></g><g class="system"><rect x="1420.0" y="390.0" width="320.0" height="125.0" class="business-system" /><text x="1430.0" y="408.0" class="business-system-title">УВХД Исполнение</text><rect x="1430.0" y="426.0" width="300.0" height="36.0" class="fp-block" /><text x="1435.0" y="443.0" class="fp-title">Бюджетный контроль</text></g><g class="system"><rect x="1420.0" y="535.0" width="320.0" height="170.0" class="business-system" /><text x="1430.0" y="553.0" class="business-system-title">ЦОД</text><rect x="1430.0" y="571.0" width="300.0" height="105.0" class="functions-block" /><text x="1435.0" y="591.0" class="functions-title">Функции:</text><rect x="1435.0" y="596.0" width="290.0" height="30.0" class="function-item" /><text x="1440.0" y="611.0" class="function-text">Ведение карточных счетов</text><rect x="1435.0" y="641.0" width="290.0" height="30.0" class="function-item" /><text x="1440.0" y="656.0" class="function-text">Зачисление/списание по карточным счетам</text></g><g class="system"><rect x="1420.0" y="725.0" width="320.0" height="80.0" class="business-system" /><text x="1430.0" y="743.0" class="business-system-title">Database Activity Monitoring</text></g></g><g class="platform"><rect x="1820.0" y="50.0" width="380.0" height="930.0" class="platform-bg" /><text x="1835.0" y="70.0" class="platform-title">ППРБ ЮЛ</text><g class="system"><rect x="1850.0" y="90.0" width="320.0" height="80.0" class="business-system" /><text x="1860.0" y="108.0" class="business-system-title">ППРБ УДКЗ</text></g><g class="system"><rect x="1850.0" y="190.0" width="320.0" height="170.0" class="business-system" /><text x="1860.0" y="208.0" class="business-system-title">ППРБ Управление операционным днем</text><rect x="1860.0" y="226.0" width="300.0" height="105.0" class="functions-block" /><text x="1865.0" y="246.0" class="functions-title">Функции:</text><rect x="1865.0" y="251.0" width="290.0" height="30.0" class="function-item" /><text x="1870.0" y="266.0" class="function-text">Витрина закрытия операционного дня по банку</text><rect x="1865.0" y="296.0" width="290.0" height="30.0" class="function-item" /><text x="1870.0" y="311.0" class="function-text">Запуск процедур</text></g><g class="system"><rect x="1850.0" y="380.0" width="320.0" height="80.0" class="business-system" /><text x="1860.0" y="398.0" class="business-system-title">ППРБ CCA</text></g><g class="system"><rect x="1850.0" y="480.0" width="320.0" height="80.0" class="business-system" /><text x="1860.0" y="498.0" class="business-system-title">ППРБ Управление потоком задач</text></g><g class="system"><rect x="1850.0" y="580.0" width="320.0" height="80.0" class="business-system" /><text x="1860.0" y="598.0" class="business-system-title">БХБ109 Online Compliance Control</text></g><g class="system"><rect x="1850.0" y="680.0" width="320.0" height="125.0" class="business-system" /><text x="1860.0" y="698.0" class="business-system-title">ППРБ AE</text><rect x="1860.0" y="716.0" width="300.0" height="70.0" class="functions-block" /><text x="1865.0" y="736.0" class="functions-title">Функции:</text><rect x="1865.0" y="741.0" width="290.0" height="30.0" class="function-item" /><text x="1870.0" y="756.0" class="function-text">Преобразование продуктовых событий в учётные</text></g><g class="system"><rect x="1850.0" y="825.0" width="320.0" height="125.0" class="business-system" /><text x="1860.0" y="843.0" class="business-system-title">ППРБ ГК</text><rect x="1860.0" y="861.0" width="300.0" height="70.0" class="functions-block" /><text x="1865.0" y="881.0" class="functions-title">Функции:</text><rect x="1865.0" y="886.0" width="290.0" height="30.0" class="function-item" /><text x="1870.0" y="901.0" class="function-text">Ведение бухгалтерского учёта</text></g></g><g class="platform"><rect x="2250.0" y="50.0" width="380.0" height="150.0" class="platform-bg" /><text x="2265.0" y="70.0" class="platform-title">КАП</text><g class="system"><rect x="2280.0" y="90.0" width="320.0" height="80.0" class="business-system" /><text x="2290.0" y="108.0" class="business-system-title">ПКАП1012 АС Учёт Налогов</text></g></g><g class="platform"><rect x="2680.0" y="50.0" width="380.0" height="470.0" class="platform-bg" /><text x="2695.0" y="70.0" class="platform-title">ППРБ PCI DSS</text><g class="system"><rect x="2710.0" y="90.0" width="320.0" height="400.0" class="business-system" /><text x="2720.0" y="108.0" class="business-system-title">Платформа процессинга</text><rect x="2720.0" y="126.0" width="300.0" height="70.0" class="functions-block" /><text x="2725.0" y="146.0" class="functions-title">Функции:</text><rect x="2725.0" y="151.0" width="290.0" height="30.0" class="function-item" /><text x="2730.0" y="166.0" class="function-text">Выгрузка событий по карточным операциям</text><rect x="2720.0" y="201.0" width="300.0" height="97.0" class="fp-block" /><text x="2725.0" y="218.0" class="fp-title">ППРБ.Карты.Базовый Платежный продукт</text><rect x="2730.0" y="240.0" width="280.0" height="46.0" class="fp-function-item" /><text x="2735.0" y="254.0" class="fp-function-text">Списание с регистра доступных средств по</text><text x="2735.0" y="272.0" class="fp-function-text">карте</text><rect x="2720.0" y="313.0" width="300.0" height="112.0" class="fp-block" /><text x="2725.0" y="330.0" class="fp-title">Дебетовый платежный продукт</text><rect x="2730.0" y="352.0" width="280.0" height="28.0" class="fp-function-item" /><text x="2735.0" y="366.0" class="fp-function-text">Зачисление-списание по карточным счетам</text><rect x="2730.0" y="385.0" width="280.0" height="28.0" class="fp-function-item" /><text x="2735.0" y="399.0" class="fp-function-text">Ведение карточных счетов</text></g></g><path d="M 1310.0,152.5 L 1340.0,152.5 L 1340.0,130.0 L 1420.0,130.0" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 1420.0,230.0 L 1390.0,230.0 L 1390.0,420.0 L 1310.0,420.0" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 1850.0,275.0 L 1820.0,275.0 L 1820.0,330.0 L 1740.0,330.0" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="" class="business-connection-close" marker-end="url(#arrowhead-business)" /><path d="M 2710.0,290.0 L 2680.0,290.0 L 2680.0,542.5 L 1310.0,542.5" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 2710.0,290.0 L 2680.0,290.0 L 2680.0,620.0 L 1740.0,620.0" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 1420.0,620.0 L 1390.0,620.0 L 1390.0,542.5 L 1310.0,542.5" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 1310.0,542.5 L 1340.0,542.5 L 1340.0,742.5 L 1850.0,742.5" class="business-connection" marker-end="url(#arrowhead-business)" /><path d="M 2170.0,742.5 L 2200.0,742.5 L 2200.0,887.5 L 2170.0,887.5" class="business-connection" marker-end="url(#arrowhead-business)" /></svg>

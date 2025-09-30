@@ -167,40 +167,89 @@ class SvgRenderer {
             svg += """<text x="${system.x + 10}" y="${system.y + 18 + index * 16}" class="business-system-title">${escapeXml(line)}</text>"""
         }
         
-        // Блок функций
+        // Рендерим содержимое системы: прямые функции и функциональные платформы
+        val titleHeight = titleLines.size * 16 + 10
+        var currentY = system.y + titleHeight + 10
+
+        // Блок прямых функций системы
         if (system.functions.isNotEmpty()) {
-            val titleHeight = titleLines.size * 16 + 10
-            val functionsY = system.y + titleHeight + 10
-            
             // Рассчитываем высоту блока функций
-            var totalFunctionHeight = 35.0 // заголовок "Функции:" + больше отступа
-            var currentY = functionsY + 30 // увеличенный отступ после заголовка
-            
+            var totalFunctionHeight = 35.0 // заголовок "Функции:" + отступ
             system.functions.forEach { func ->
                 val lines = wrapText(func.name, maxFunctionTextWidth)
-                totalFunctionHeight += lines.size * functionHeight + 15 // увеличен отступ между функциями с 8px до 15px
+                totalFunctionHeight += lines.size * functionHeight + 15 // отступ между функциями
             }
-            
+
             // Фон блока функций
-            svg += """<rect x="${system.x + 10}" y="$functionsY" width="${system.width - 20}" height="$totalFunctionHeight" class="functions-block" />"""
-            
+            svg += """<rect x="${system.x + 10}" y="$currentY" width="${system.width - 20}" height="$totalFunctionHeight" class="functions-block" />"""
+
             // Заголовок блока функций
-            svg += """<text x="${system.x + 15}" y="${functionsY + 20}" class="functions-title">Функции:</text>"""
-            
+            svg += """<text x="${system.x + 15}" y="${currentY + 20}" class="functions-title">Функции:</text>"""
+
             // Функции с переносом текста
+            var funcY = currentY + 30
             system.functions.forEach { func ->
                 val lines = wrapText(func.name, maxFunctionTextWidth)
-                val funcHeight = lines.size * functionHeight + 10 // увеличена внутренняя высота функции
-                
+                val funcHeight = lines.size * functionHeight + 10
+
                 // Фон функции
-                svg += """<rect x="${system.x + 15}" y="${currentY - 5}" width="${system.width - 30}" height="$funcHeight" class="function-item" />"""
+                svg += """<rect x="${system.x + 15}" y="${funcY - 5}" width="${system.width - 30}" height="$funcHeight" class="function-item" />"""
                 
                 // Текст функции с переносом
                 lines.forEachIndexed { lineIndex, line ->
-                    svg += """<text x="${system.x + 20}" y="${currentY + 15 + lineIndex * functionHeight}" class="function-text">${escapeXml(line)}</text>"""
+                    svg += """<text x="${system.x + 20}" y="${funcY + 10 + lineIndex * functionHeight}" class="function-text">${escapeXml(line)}</text>"""
                 }
                 
-                currentY += funcHeight + 15 // увеличен отступ между функциями с 8px до 15px
+                funcY += funcHeight + 15 // увеличен отступ между функциями с 8px до 15px
+            }
+            
+            currentY = funcY
+        }
+
+        // Рендерим функциональные платформы
+        if (system.functionalPlatforms.isNotEmpty()) {
+            system.functionalPlatforms.forEach { fp ->
+                // Рассчитываем высоту заголовка FP с учетом переноса
+                val titleLines = wrapText(fp.name, maxFunctionTextWidth - 10) // ширина для заголовка FP
+                val titleHeight = titleLines.size * 16 + 10 // высота заголовка + отступ
+                
+                // Рассчитываем общую высоту FP блока включая заголовок и функции
+                var totalFpHeight = titleHeight + 10.0 // заголовок FP + дополнительный отступ
+                fp.functions.forEach { func ->
+                    val lines = wrapText(func.name, maxFunctionTextWidth - 40) // больше отступ внутри FP
+                    totalFpHeight += lines.size * (functionHeight - 2) + 15 // высота функции + отступ
+                }
+                if (fp.functions.isNotEmpty()) {
+                    totalFpHeight += 10 // дополнительный отступ снизу
+                }
+                
+                // Фон FP блока (включает место для заголовка и всех функций)
+                svg += """<rect x="${system.x + 10}" y="$currentY" width="${system.width - 20}" height="$totalFpHeight" class="fp-block" />"""
+                
+                // Заголовок FP с переносом
+                titleLines.forEachIndexed { index, line ->
+                    svg += """<text x="${system.x + 15}" y="${currentY + 17 + index * 16}" class="fp-title">${escapeXml(line)}</text>"""
+                }
+                
+                var fpFunctionY = currentY + titleHeight + 15 // начальная позиция для функций внутри FP
+                
+                // Функции внутри FP блока
+                fp.functions.forEach { func ->
+                    val lines = wrapText(func.name, maxFunctionTextWidth - 40)
+                    val fpFuncHeight = lines.size * (functionHeight - 2) + 10
+                    
+                    // Фон функции внутри FP
+                    svg += """<rect x="${system.x + 20}" y="${fpFunctionY - 2}" width="${system.width - 40}" height="$fpFuncHeight" class="fp-function-item" />"""
+                    
+                    // Текст функции внутри FP с переносом
+                    lines.forEachIndexed { lineIndex, line ->
+                        svg += """<text x="${system.x + 25}" y="${fpFunctionY + 12 + lineIndex * (functionHeight - 2)}" class="fp-function-text">${escapeXml(line)}</text>"""
+                    }
+                    
+                    fpFunctionY += fpFuncHeight + 5
+                }
+                
+                currentY += totalFpHeight + 15 // отступ между FP блоками
             }
         }
         
@@ -408,6 +457,31 @@ class SvgRenderer {
                 font-size: 10px;
                 font-weight: bold;
                 fill: #333;
+              }
+              .fp-block {
+                fill: #e3f2fd;
+                stroke: #42a5f5;
+                stroke-width: 1;
+                stroke-dasharray: none;
+                rx: 6;
+              }
+              .fp-title {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                font-weight: bold;
+                fill: #1e3a5f;
+              }
+              .fp-function-item {
+                fill: #f8bbd9;
+                stroke: #f48fb1;
+                stroke-width: 1;
+                rx: 4;
+              }
+              .fp-function-text {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                font-size: 10px;
+                fill: #4a148c;
+                font-weight: 500;
               }
             </style>
         """.trimIndent()

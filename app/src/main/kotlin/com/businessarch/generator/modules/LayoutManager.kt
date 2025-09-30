@@ -34,13 +34,30 @@ class LayoutManager {
                 var totalPlatformHeight = 0.0
 
                 platform.systems.forEach { system ->
-                    // Размещаем функции внутри АС с увеличенными отступами
+                    // Рассчитываем высоту АС с учетом прямых функций и вложенных FP
+                    var systemContentHeight = 40.0 // Базовая высота для заголовка АС
+
+                    // Добавляем высоту для прямых функций АС
                     if (system.functions.isNotEmpty()) {
-                        // Рассчитываем высоту с учетом новых отступов: 
-                        // заголовок (35px) + каждая функция (30px) + отступы между функциями (15px)
-                        val functionsBlockHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + functionsPadding * 2
-                        system.height = max(system.height, 80.0 + functionsBlockHeight)
+                        val directFunctionsHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + functionsPadding * 2
+                        systemContentHeight += directFunctionsHeight
                     }
+
+                    // Добавляем высоту для функциональных платформ внутри АС
+                    if (system.functionalPlatforms.isNotEmpty()) {
+                        system.functionalPlatforms.forEach { fp ->
+                            // Высота FP: заголовок + функции + отступы
+                            val fpFunctionsHeight = if (fp.functions.isNotEmpty()) {
+                                25.0 + fp.functions.size * 25.0 + (fp.functions.size - 1) * 10.0 + functionsPadding
+                            } else 0.0
+
+                            fp.height = max(40.0 + fpFunctionsHeight, 60.0)
+                            systemContentHeight += fp.height + 15.0 // Отступ между FP
+                        }
+                        systemContentHeight += 10 // Дополнительный отступ после всех FP
+                    }
+
+                    system.height = max(systemContentHeight, 80.0)
 
                     // Размещаем АС вертикально внутри платформы
                     system.x = currentRegionX + platformPadding
@@ -99,11 +116,30 @@ class LayoutManager {
             var totalPlatformHeight = 0.0
 
             systems.forEach { system ->
-                // Обновляем высоту системы с учетом функций
+                // Рассчитываем высоту АС с учетом прямых функций и вложенных FP
+                var systemContentHeight = 40.0 // Базовая высота для заголовка АС
+
+                // Добавляем высоту для прямых функций АС
                 if (system.functions.isNotEmpty()) {
-                    val functionsBlockHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + 10 * 2
-                    system.height = max(system.height, 80.0 + functionsBlockHeight)
+                    val directFunctionsHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + 10 * 2
+                    systemContentHeight += directFunctionsHeight
                 }
+
+                // Добавляем высоту для функциональных платформ внутри АС
+                if (system.functionalPlatforms.isNotEmpty()) {
+                    system.functionalPlatforms.forEach { fp ->
+                        // Высота FP: заголовок + функции + отступы
+                        val fpFunctionsHeight = if (fp.functions.isNotEmpty()) {
+                            25.0 + fp.functions.size * 25.0 + (fp.functions.size - 1) * 10.0 + 10.0
+                        } else 0.0
+
+                        fp.height = max(40.0 + fpFunctionsHeight, 60.0)
+                        systemContentHeight += fp.height + 15.0 // Отступ между FP
+                    }
+                    systemContentHeight += 10.0 // Дополнительный отступ после всех FP
+                }
+
+                system.height = max(systemContentHeight, 80.0)
 
                 system.x = currentPlatformX + platformPadding
                 system.y = currentSystemY

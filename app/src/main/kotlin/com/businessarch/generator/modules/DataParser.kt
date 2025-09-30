@@ -37,15 +37,16 @@ class DataParser {
                 region = asData.region, // Не создаем автоматически "Общий регион"
                 role = asData.role,
                 functions = mutableListOf(),
+                functionalPlatforms = mutableListOf(),
                 x = 0.0,
                 y = 0.0,
                 width = asFixedWidth,
                 height = asMinHeight
             )
 
-            // Добавляем функции к системе
+            // Добавляем прямые функции к системе (функции без FP)
             data.Function.forEach { func ->
-                if (func.AS == asData.name) {
+                if (func.AS == asData.name && func.FP.isEmpty()) {
                     system.functions.add(
                         Function(
                             id = func.id,
@@ -56,7 +57,33 @@ class DataParser {
                 }
             }
 
-            // Рассчитываем размер АС на основе функций
+            // Парсим функциональные платформы для данной AS
+            data.FP.forEach { fpData ->
+                if (fpData.AS == asData.name) {
+                    val functionalPlatform = FunctionalPlatform(
+                        id = fpData.id,
+                        name = fpData.name,
+                        functions = mutableListOf()
+                    )
+
+                    // Добавляем функции к функциональной платформе
+                    data.Function.forEach { func ->
+                        if (func.FP == fpData.name) {
+                            functionalPlatform.functions.add(
+                                Function(
+                                    id = func.id,
+                                    name = func.name,
+                                    type = func.type
+                                )
+                            )
+                        }
+                    }
+
+                    system.functionalPlatforms.add(functionalPlatform)
+                }
+            }
+
+            // Рассчитываем размер АС на основе функций и FP
             calculateSystemSize(system)
             systemMap[system.name] = system
 
@@ -125,31 +152,46 @@ class DataParser {
     }
 
     /**
-     * Рассчитывает размер АС на основе количества функций
+     * Рассчитывает размер АС на основе количества функций и FP
      */
     private fun calculateSystemSize(system: System) {
         // Используем фиксированную ширину для всех АС
         system.width = asFixedWidth
-        
+
         // Рассчитываем высоту заголовка с учетом переноса
         val titleLines = wrapText(system.name, asFixedWidth - 20)
         val titleHeight = titleLines.size * 16 + 10
-        
-        // Рассчитываем высоту блока функций
-        var functionsBlockHeight = 0.0
+
+        // Рассчитываем высоту блока прямых функций системы
+        var directFunctionsBlockHeight = 0.0
         if (system.functions.isNotEmpty()) {
-            functionsBlockHeight = 25.0 // заголовок "Функции:"
-            
+            directFunctionsBlockHeight = 25.0 // заголовок "Функции:"
+
             system.functions.forEach { func ->
                 val lines = wrapText(func.name, maxFunctionTextWidth)
-                functionsBlockHeight += lines.size * functionHeight + 8 // 8px между функциями
+                directFunctionsBlockHeight += lines.size * functionHeight + 8 // 8px между функциями
             }
-            
-            functionsBlockHeight += 10 // отступ снизу блока функций
+
+            directFunctionsBlockHeight += 10 // отступ снизу блока функций
         }
-        
-        // Общая высота = заголовок + функции + минимальные отступы
-        val totalHeight = titleHeight + functionsBlockHeight + 20 // 20px - общие отступы
+
+        // Рассчитываем высоту функциональных платформ
+        var fpBlockHeight = 0.0
+        if (system.functionalPlatforms.isNotEmpty()) {
+            system.functionalPlatforms.forEach { fp ->
+                fpBlockHeight += 25.0 // заголовок FP
+
+                fp.functions.forEach { func ->
+                    val lines = wrapText(func.name, maxFunctionTextWidth - 20) // уменьшаем ширину для отступа
+                    fpBlockHeight += lines.size * (functionHeight - 2) + 6 // чуть меньше высоты для функций в FP
+                }
+
+                fpBlockHeight += 15.0 // отступ между FP
+            }
+        }
+
+        // Общая высота = заголовок + прямые функции + FP + минимальные отступы
+        val totalHeight = titleHeight + directFunctionsBlockHeight + fpBlockHeight + 20 // 20px - общие отступы
         
         system.height = max(totalHeight, asMinHeight)
     }

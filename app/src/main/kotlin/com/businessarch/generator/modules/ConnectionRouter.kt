@@ -127,11 +127,13 @@ class ConnectionRouter {
         }
         
         // Проверяем регионы
-        return when {
+        val connectionType = when {
             source.region != target.region -> "inter-region"
             source.platform != target.platform -> "inter-platform"
             else -> "intra-platform"
         }
+        
+        return connectionType
     }
 
     /**
@@ -338,12 +340,20 @@ class ConnectionRouter {
         val deltaX = targetCenterX - sourceCenterX
         val deltaY = targetCenterY - sourceCenterY
         
+        // Специальная логика для систем в одной платформе
+        val isSamePlatform = context.connectionType == "intra-platform"
+        val isVerticallyAligned = abs(deltaX) < source.width / 2 // Системы примерно друг над другом
+        
         // Основное правило: приоритет горизонтальным выходам (справа/слева)
         // Вертикальный выход только если блоки строго друг над другом И нет препятствий
         val isDirectlyAboveOrBelow = abs(deltaX) < source.width / 4 // Очень близко по горизонтали
         val hasObstacles = hasObstaclesBetween(source, target, context)
         
         return when {
+            // Для систем в одной платформе, расположенных вертикально - использовать правую сторону
+            isSamePlatform && isVerticallyAligned -> {
+                Point(x = source.x + source.width, y = sourceCenterY)
+            }
             isDirectlyAboveOrBelow && !hasObstacles -> {
                 // Редкий случай: блоки строго друг над другом и нет препятствий - вертикальный выход
                 if (deltaY > 0) {
@@ -379,12 +389,20 @@ class ConnectionRouter {
         val deltaX = targetCenterX - sourceCenterX
         val deltaY = targetCenterY - sourceCenterY
         
+        // Специальная логика для систем в одной платформе
+        val isSamePlatform = context.connectionType == "intra-platform"
+        val isVerticallyAligned = abs(deltaX) < target.width / 2 // Системы примерно друг над другом
+        
         // Основное правило: приоритет горизонтальным входам (справа/слева)
         // Вертикальный вход только если блоки строго друг над другом И нет препятствий
         val isDirectlyAboveOrBelow = abs(deltaX) < target.width / 4 // Очень близко по горизонтали
         val hasObstacles = hasObstaclesBetween(source, target, context)
         
         return when {
+            // Для систем в одной платформе, расположенных вертикально - использовать правую сторону
+            isSamePlatform && isVerticallyAligned -> {
+                Point(x = target.x + target.width, y = targetCenterY)
+            }
             isDirectlyAboveOrBelow && !hasObstacles -> {
                 // Редкий случай: блоки строго друг над другом и нет препятствий - вертикальный вход
                 if (deltaY > 0) {
