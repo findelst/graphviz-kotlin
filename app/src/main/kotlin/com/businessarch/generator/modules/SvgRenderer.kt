@@ -14,6 +14,37 @@ class SvgRenderer {
     private val functionHeight = 20.0
 
     /**
+     * Генерирует SVG для платформ (без регионов)
+     */
+    fun generatePlatformSVG(
+        platforms: List<Platform>,
+        connections: List<Connection>,
+        systemMap: Map<String, System>,
+        spatialAnalysis: Any? = null
+    ): String {
+        // Рассчитываем размеры canvas
+        var maxX = if (platforms.isNotEmpty()) platforms.maxOf { it.x + it.width } + 50 else 50.0
+        var maxY = if (platforms.isNotEmpty()) platforms.maxOf { it.y + it.height } + 50 else 50.0
+
+        var svg = """<svg width="${maxX.toInt()}" height="${maxY.toInt()}" xmlns="http://www.w3.org/2000/svg">"""
+
+        // Добавляем стили
+        svg += getHierarchicalStyles()
+
+        // Добавляем маркеры для стрелок
+        svg += getArrowMarkers()
+
+        // Рендерим платформы
+        platforms.forEach { platform ->
+            svg += renderPlatform(platform)
+        }
+
+        svg += "</svg>"
+
+        return svg
+    }
+
+    /**
      * Генерирует иерархический SVG для бизнес-архитектуры
      */
     fun generateHierarchicalSVG(
@@ -155,18 +186,12 @@ class SvgRenderer {
      */
     private fun renderHierarchicalSystem(system: System): String {
         val roleClass = getSystemClass(system)
-        
+
         var svg = """<g class="system">"""
-        
-        // Основной прямоугольник системы
-        svg += """<rect x="${system.x}" y="${system.y}" width="${system.width}" height="${system.height}" class="$roleClass" />"""
-        
+
         // Заголовок системы с переносом если нужно
         val titleLines = wrapText(system.name, asFixedWidth - 20)
-        titleLines.forEachIndexed { index, line ->
-            svg += """<text x="${system.x + 10}" y="${system.y + 18 + index * 16}" class="business-system-title">${escapeXml(line)}</text>"""
-        }
-        
+
         // Рендерим содержимое системы: прямые функции и функциональные платформы
         val titleHeight = titleLines.size * 16 + 10
         var currentY = system.y + titleHeight + 10
@@ -252,7 +277,18 @@ class SvgRenderer {
                 currentY += totalFpHeight + 15 // отступ между FP блоками
             }
         }
-        
+
+        // Рассчитываем итоговую высоту системы на основе отрисованного контента
+        val actualSystemHeight = currentY - system.y + 10 // добавляем нижний отступ
+
+        // Теперь рендерим основной прямоугольник системы с правильной высотой
+        // Вставляем его в начало, чтобы он был под контентом
+        svg = """<g class="system"><rect x="${system.x}" y="${system.y}" width="${system.width}" height="$actualSystemHeight" class="$roleClass" />""" +
+              titleLines.mapIndexed { index, line ->
+                  """<text x="${system.x + 10}" y="${system.y + 18 + index * 16}" class="business-system-title">${escapeXml(line)}</text>"""
+              }.joinToString("") +
+              svg.substring("""<g class="system">""".length) // убираем дублирующий открывающий тег
+
         svg += """</g>"""
         return svg
     }

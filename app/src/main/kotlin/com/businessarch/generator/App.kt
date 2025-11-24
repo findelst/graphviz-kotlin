@@ -6,6 +6,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import java.io.File
 
+val json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+}
+
 /**
  * Главное приложение для генерации бизнес-архитектуры на Kotlin
  */
@@ -47,12 +52,12 @@ class App {
     fun loadAndProcess(jsonFilePath: String) {
         try {
             val jsonContent = File(jsonFilePath).readText()
-            val businessData = Json.decodeFromString<BusinessData>(jsonContent)
-            
+            val archResult = json.decodeFromString<ArchResult>(jsonContent)
+
             println("📁 Загружены данные из: $jsonFilePath")
-            
-            val result = generator.generateBusinessArchitecture(businessData)
-            
+
+            val result = generator.generateBusinessArchitecture(archResult)
+
             if (result.success && result.data != null) {
                 println("✅ Обработка завершена!")
                 val filename = generator.exportToSVG(result.data.svg, "output-business-architecture.svg")
@@ -60,7 +65,7 @@ class App {
             } else {
                 println("❌ Ошибка обработки: ${result.error}")
             }
-            
+
         } catch (e: Exception) {
             println("❌ Ошибка загрузки файла: ${e.message}")
         }
@@ -69,85 +74,77 @@ class App {
     /**
      * Создает тестовые данные для демонстрации
      */
-    private fun createTestBusinessData(): BusinessData {
-        return BusinessData(
+    private fun createTestBusinessData(): ArchResult {
+        return ArchResult(
+            Var = emptyMap(),
             AS = listOf(
-                AutomatedSystem(
+                AsObject(
                     id = "crm",
                     name = "CRM Система",
                     platform = "Клиентская платформа",
-                    region = "Фронт-офис",
                     role = listOf("sales_channel")
                 ),
-                AutomatedSystem(
+                AsObject(
                     id = "erp",
                     name = "ERP Система",
-                    platform = "Корпоративная платформа", 
-                    region = "Бэк-офис",
+                    platform = "Корпоративная платформа",
                     role = listOf("product_fabric")
                 ),
-                AutomatedSystem(
+                AsObject(
                     id = "billing",
                     name = "Биллинговая система",
                     platform = "Финансовая платформа",
-                    region = "Бэк-офис",
                     role = listOf()
                 ),
-                AutomatedSystem(
+                AsObject(
                     id = "external_bank",
                     name = "Банковская система",
                     platform = "Внешняя АС",
-                    region = null,
-                    role = listOf()
+                    role = null
                 )
             ),
-            Function = listOf(
-                BusinessFunction(
+            function = listOf(
+                FunctionObject(
                     id = "f1",
                     name = "Управление клиентами",
-                    type = "business",
-                    AS = "CRM Система"
+                    asName = "CRM Система"
                 ),
-                BusinessFunction(
-                    id = "f2", 
+                FunctionObject(
+                    id = "f2",
                     name = "Обработка заказов",
-                    type = "business",
-                    AS = "CRM Система"
+                    asName = "CRM Система"
                 ),
-                BusinessFunction(
+                FunctionObject(
                     id = "f3",
                     name = "Управление складом",
-                    type = "business", 
-                    AS = "ERP Система"
+                    asName = "ERP Система"
                 ),
-                BusinessFunction(
+                FunctionObject(
                     id = "f4",
                     name = "Финансовый учет",
-                    type = "business",
-                    AS = "ERP Система"
+                    asName = "ERP Система"
                 ),
-                BusinessFunction(
+                FunctionObject(
                     id = "f5",
                     name = "Выставление счетов",
-                    type = "business",
-                    AS = "Биллинговая система"
+                    asName = "Биллинговая система"
                 )
             ),
-            Link = listOf(
-                SystemLink(
-                    source = LinkTarget(AS = "CRM Система"),
-                    target = LinkTarget(AS = "ERP Система"),
-                    description = "Передача заказов"
+            link = listOf(
+                LinkObject(
+                    id = "l1",
+                    source = LinkEnd(type = "AS", name = "CRM Система"),
+                    target = LinkEnd(type = "AS", name = "ERP Система")
                 ),
-                SystemLink(
-                    source = LinkTarget(AS = "ERP Система"),
-                    target = LinkTarget(AS = "Биллинговая система"),
-                    description = "Данные для биллинга"
+                LinkObject(
+                    id = "l2",
+                    source = LinkEnd(type = "AS", name = "ERP Система"),
+                    target = LinkEnd(type = "AS", name = "Биллинговая система")
                 ),
-                SystemLink(
-                    source = LinkTarget(AS = "Биллинговая система"),
-                    target = LinkTarget(AS = "Банковская система"),
-                    description = "Платежные операции"
+                LinkObject(
+                    id = "l3",
+                    source = LinkEnd(type = "AS", name = "Биллинговая система"),
+                    target = LinkEnd(type = "AS", name = "Банковская система")
                 )
             )
         )
@@ -156,5 +153,6 @@ class App {
 
 fun main(args: Array<String>) = runBlocking {
     val app = App()
-    app.loadAndProcess("../test-data.json")
+    val filePath = if (args.isNotEmpty()) args[0] else "../answers_transformed_full_direct_result.json"
+    app.loadAndProcess(filePath)
 }

@@ -33,7 +33,6 @@ class ArrowFormationTest {
             id = "sys-a",
             name = "Система A",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -47,7 +46,6 @@ class ArrowFormationTest {
             id = "sys-b", 
             name = "Система B",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -88,7 +86,6 @@ class ArrowFormationTest {
             id = "sys-a",
             name = "Система A",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -102,7 +99,6 @@ class ArrowFormationTest {
             id = "sys-b",
             name = "Система B",
             platform = "Платформа 2",
-            region = "Регион 2",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -131,7 +127,6 @@ class ArrowFormationTest {
             id = "internal-sys",
             name = "Внутренняя система",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -145,7 +140,6 @@ class ArrowFormationTest {
             id = "bank-sys",
             name = "Банк",
             platform = "Внешняя АС",
-            region = "Внешние системы",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -193,7 +187,6 @@ class ArrowFormationTest {
             id = "sys-1",
             name = "Система 1",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -207,7 +200,6 @@ class ArrowFormationTest {
             id = "ext-sys",
             name = "Внешняя система",
             platform = "Внешняя АС",
-            region = "Внешние системы",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -260,7 +252,6 @@ class ArrowFormationTest {
             id = "source-sys",
             name = "Источник",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {
@@ -274,7 +265,6 @@ class ArrowFormationTest {
             id = "target-sys",
             name = "Цель",
             platform = "Платформа 1",
-            region = "Регион 1",
             role = emptyList(),
             functions = mutableListOf()
         ).apply {

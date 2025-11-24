@@ -18,13 +18,10 @@ class DataParser {
     /**
      * Парсит JSON данные бизнес-архитектуры
      */
-    fun parseBusinessData(data: BusinessData): ParsedBusinessData {
-        val regions = mutableListOf<Region>()
+    fun parseBusinessData(data: ArchResult): ParsedBusinessData {
+        val platforms = mutableListOf<Platform>()
         val connections = mutableListOf<Connection>()
-        val systemsWithoutRegion = mutableListOf<System>() // Системы без региона
 
-        // Создаем структуру регионов
-        val regionMap = mutableMapOf<String, Region>()
         val platformMap = mutableMapOf<String, Platform>()
         val systemMap = mutableMapOf<String, System>()
 
@@ -34,8 +31,7 @@ class DataParser {
                 id = asData.id,
                 name = asData.name,
                 platform = asData.platform ?: "Не указана",
-                region = asData.region, // Не создаем автоматически "Общий регион"
-                role = asData.role,
+                role = asData.role ?: emptyList(),
                 functions = mutableListOf(),
                 functionalPlatforms = mutableListOf(),
                 x = 0.0,
@@ -45,13 +41,13 @@ class DataParser {
             )
 
             // Добавляем прямые функции к системе (функции без FP)
-            data.Function.forEach { func ->
-                if (func.AS == asData.name && func.FP.isEmpty()) {
+            data.function.forEach { func ->
+                if (func.asName == asData.name && (func.fpName == null || func.fpName.isEmpty())) {
                     system.functions.add(
                         Function(
                             id = func.id,
                             name = func.name,
-                            type = func.type
+                            type = null
                         )
                     )
                 }
@@ -59,7 +55,7 @@ class DataParser {
 
             // Парсим функциональные платформы для данной AS
             data.FP.forEach { fpData ->
-                if (fpData.AS == asData.name) {
+                if (fpData.asName == asData.name) {
                     val functionalPlatform = FunctionalPlatform(
                         id = fpData.id,
                         name = fpData.name,
@@ -67,13 +63,14 @@ class DataParser {
                     )
 
                     // Добавляем функции к функциональной платформе
-                    data.Function.forEach { func ->
-                        if (func.FP == fpData.name) {
+                    data.function.forEach { func ->
+                        // Проверяем что функция принадлежит данной FP и данной AS
+                        if (func.fpName == fpData.name && func.asName == asData.name) {
                             functionalPlatform.functions.add(
                                 Function(
                                     id = func.id,
                                     name = func.name,
-                                    type = func.type
+                                    type = null
                                 )
                             )
                         }
@@ -87,68 +84,56 @@ class DataParser {
             calculateSystemSize(system)
             systemMap[system.name] = system
 
-            // Только для систем с указанным регионом создаем платформы и регионы
-            if (system.region != null) {
-                // Создаем или находим платформу
-                val platformKey = "${system.region}::${system.platform}"
-                val platform = platformMap.getOrPut(platformKey) {
-                    Platform(
-                        name = system.platform,
-                        region = system.region,
-                        systems = mutableListOf(),
-                        x = 0.0,
-                        y = 0.0,
-                        width = 0.0,
-                        height = 0.0
-                    )
-                }
-                platform.systems.add(system)
-
-                // Создаем или находим регион
-                val region = regionMap.getOrPut(system.region) {
-                    Region(
-                        name = system.region,
-                        platforms = mutableListOf(),
-                        x = 0.0,
-                        y = 0.0,
-                        width = 0.0,
-                        height = 0.0
-                    )
-                }
-            } else {
-                // Добавляем систему без региона в отдельный список
-                systemsWithoutRegion.add(system)
+            // Создаем или находим платформу (без региона)
+            val platform = platformMap.getOrPut(system.platform) {
+                Platform(
+                    name = system.platform,
+                    systems = mutableListOf(),
+                    x = 0.0,
+                    y = 0.0,
+                    width = 0.0,
+                    height = 0.0
+                )
             }
-        }
-
-        // Группируем платформы по регионам
-        platformMap.values.forEach { platform ->
-            val region = regionMap[platform.region]
-            if (region != null && region.platforms.none { it.name == platform.name }) {
-                region.platforms.add(platform)
-            }
+            platform.systems.add(system)
         }
 
         // Преобразуем в список
-        regions.addAll(regionMap.values)
+        platforms.addAll(platformMap.values)
 
-        // Парсим связи (поддерживаем и Link и Links)
-        val linksData = data.Link + data.Links
-        
-        linksData.forEach { link ->
-            if (link.source.AS.isNotEmpty() && link.target.AS.isNotEmpty()) {
+        // Парсим связи
+        data.link.forEach { link ->
+            val sourceName = getSystemName(link.source, data)
+            val targetName = getSystemName(link.target, data)
+
+            if (sourceName != null && targetName != null) {
                 connections.add(
                     Connection(
-                        source = link.source.AS,
-                        target = link.target.AS,
+                        source = sourceName,
+                        target = targetName,
                         type = "business",
-                        description = link.description
+                        description = null
                     )
                 )
             }
         }
 
-        return ParsedBusinessData(regions, connections, systemMap, systemsWithoutRegion)
+        return ParsedBusinessData(platforms, connections, systemMap)
+    }
+
+    /**
+     * Получает имя системы из LinkEnd
+     */
+    private fun getSystemName(linkEnd: LinkEnd, data: ArchResult): String? {
+        return when (linkEnd.type) {
+            "AS" -> linkEnd.name ?: linkEnd.asName
+            "FP" -> {
+                // Находим AS для данной FP
+                val fp = data.FP.find { it.name == linkEnd.name }
+                fp?.asName
+            }
+            else -> null
+        }
     }
 
     /**
@@ -165,28 +150,38 @@ class DataParser {
         // Рассчитываем высоту блока прямых функций системы
         var directFunctionsBlockHeight = 0.0
         if (system.functions.isNotEmpty()) {
-            directFunctionsBlockHeight = 25.0 // заголовок "Функции:"
+            directFunctionsBlockHeight = 35.0 // заголовок "Функции:" + отступ (синхронизировано с SvgRenderer)
 
             system.functions.forEach { func ->
                 val lines = wrapText(func.name, maxFunctionTextWidth)
-                directFunctionsBlockHeight += lines.size * functionHeight + 8 // 8px между функциями
+                val funcHeight = lines.size * functionHeight + 10 // высота одной функции
+                directFunctionsBlockHeight += funcHeight + 15 // 15px между функциями (синхронизировано с SvgRenderer)
             }
 
             directFunctionsBlockHeight += 10 // отступ снизу блока функций
         }
 
-        // Рассчитываем высоту функциональных платформ
+        // Рассчитываем высоту функциональных платформ (синхронизировано с SvgRenderer)
         var fpBlockHeight = 0.0
         if (system.functionalPlatforms.isNotEmpty()) {
             system.functionalPlatforms.forEach { fp ->
-                fpBlockHeight += 25.0 // заголовок FP
+                // Рассчитываем высоту заголовка FP с учетом переноса
+                val titleLines = wrapText(fp.name, maxFunctionTextWidth - 10)
+                val titleHeight = titleLines.size * 16 + 10
+
+                // Общая высота FP блока = заголовок + дополнительный отступ + функции
+                var totalFpHeight = titleHeight + 10.0
 
                 fp.functions.forEach { func ->
-                    val lines = wrapText(func.name, maxFunctionTextWidth - 20) // уменьшаем ширину для отступа
-                    fpBlockHeight += lines.size * (functionHeight - 2) + 6 // чуть меньше высоты для функций в FP
+                    val lines = wrapText(func.name, maxFunctionTextWidth - 40) // больше отступ внутри FP
+                    totalFpHeight += lines.size * (functionHeight - 2) + 15 // высота функции + отступ (синхронизировано с SvgRenderer)
                 }
 
-                fpBlockHeight += 15.0 // отступ между FP
+                if (fp.functions.isNotEmpty()) {
+                    totalFpHeight += 10 // дополнительный отступ снизу
+                }
+
+                fpBlockHeight += totalFpHeight + 15.0 // отступ между FP (синхронизировано с SvgRenderer)
             }
         }
 
@@ -234,8 +229,7 @@ class DataParser {
  * Результат парсинга бизнес-данных
  */
 data class ParsedBusinessData(
-    val regions: List<Region>,
+    val platforms: List<Platform>,
     val connections: List<Connection>,
-    val systemMap: Map<String, System>,
-    val systemsWithoutRegion: List<System>
+    val systemMap: Map<String, System>
 )

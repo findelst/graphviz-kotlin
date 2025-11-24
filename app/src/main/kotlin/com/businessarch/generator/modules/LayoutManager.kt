@@ -34,35 +34,11 @@ class LayoutManager {
                 var totalPlatformHeight = 0.0
 
                 platform.systems.forEach { system ->
-                    // Рассчитываем высоту АС с учетом прямых функций и вложенных FP
-                    var systemContentHeight = 40.0 // Базовая высота для заголовка АС
-
-                    // Добавляем высоту для прямых функций АС
-                    if (system.functions.isNotEmpty()) {
-                        val directFunctionsHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + functionsPadding * 2
-                        systemContentHeight += directFunctionsHeight
-                    }
-
-                    // Добавляем высоту для функциональных платформ внутри АС
-                    if (system.functionalPlatforms.isNotEmpty()) {
-                        system.functionalPlatforms.forEach { fp ->
-                            // Высота FP: заголовок + функции + отступы
-                            val fpFunctionsHeight = if (fp.functions.isNotEmpty()) {
-                                25.0 + fp.functions.size * 25.0 + (fp.functions.size - 1) * 10.0 + functionsPadding
-                            } else 0.0
-
-                            fp.height = max(40.0 + fpFunctionsHeight, 60.0)
-                            systemContentHeight += fp.height + 15.0 // Отступ между FP
-                        }
-                        systemContentHeight += 10 // Дополнительный отступ после всех FP
-                    }
-
-                    system.height = max(systemContentHeight, 80.0)
-
+                    // Используем высоту, уже рассчитанную в DataParser
                     // Размещаем АС вертикально внутри платформы
                     system.x = currentRegionX + platformPadding
                     system.y = currentASY
-                    
+
                     currentASY += system.height + asPadding
                     maxPlatformWidth = max(maxPlatformWidth, system.width + platformPadding * 2)
                     totalPlatformHeight += system.height + asPadding
@@ -116,31 +92,7 @@ class LayoutManager {
             var totalPlatformHeight = 0.0
 
             systems.forEach { system ->
-                // Рассчитываем высоту АС с учетом прямых функций и вложенных FP
-                var systemContentHeight = 40.0 // Базовая высота для заголовка АС
-
-                // Добавляем высоту для прямых функций АС
-                if (system.functions.isNotEmpty()) {
-                    val directFunctionsHeight = 35 + system.functions.size * 30 + (system.functions.size - 1) * 15 + 10 * 2
-                    systemContentHeight += directFunctionsHeight
-                }
-
-                // Добавляем высоту для функциональных платформ внутри АС
-                if (system.functionalPlatforms.isNotEmpty()) {
-                    system.functionalPlatforms.forEach { fp ->
-                        // Высота FP: заголовок + функции + отступы
-                        val fpFunctionsHeight = if (fp.functions.isNotEmpty()) {
-                            25.0 + fp.functions.size * 25.0 + (fp.functions.size - 1) * 10.0 + 10.0
-                        } else 0.0
-
-                        fp.height = max(40.0 + fpFunctionsHeight, 60.0)
-                        systemContentHeight += fp.height + 15.0 // Отступ между FP
-                    }
-                    systemContentHeight += 10.0 // Дополнительный отступ после всех FP
-                }
-
-                system.height = max(systemContentHeight, 80.0)
-
+                // Используем высоту, уже рассчитанную в DataParser
                 system.x = currentPlatformX + platformPadding
                 system.y = currentSystemY
 
@@ -173,16 +125,50 @@ class LayoutManager {
     }
 
     /**
+     * Применяет компоновку для платформ (без регионов)
+     */
+    fun applyPlatformLayout(platforms: List<Platform>) {
+        val platformPadding = 40.0  // Увеличили отступ внутри платформы
+        val asPadding = 30.0         // Увеличили отступ между системами
+        val functionsPadding = 10.0
+        val platformSpacing = 100.0  // Отступ между платформами
+
+        var currentPlatformX = 50.0
+
+        platforms.forEach { platform ->
+            // Устанавливаем Y координату платформы
+            platform.y = 50.0
+
+            var currentASY = platform.y + 50.0 // Место для заголовка платформы + отступ
+            var maxPlatformWidth = 0.0
+            var totalPlatformHeight = 0.0
+
+            platform.systems.forEach { system ->
+                // Используем высоту, уже рассчитанную в DataParser.calculateSystemSize()
+                // Она учитывает переносы строк и правильно вычисляет размер
+                // НЕ пересчитываем высоту здесь, чтобы избежать ошибок
+
+                // Размещаем АС вертикально внутри платформы
+                system.x = currentPlatformX + platformPadding
+                system.y = currentASY
+
+                currentASY += system.height + asPadding
+                maxPlatformWidth = max(maxPlatformWidth, system.width + platformPadding * 2)
+                totalPlatformHeight += system.height + asPadding
+            }
+
+            platform.x = currentPlatformX
+            platform.width = max(maxPlatformWidth, 200.0)
+            platform.height = totalPlatformHeight + 60 // Заголовок + отступы сверху и снизу
+
+            currentPlatformX += platform.width + platformSpacing
+        }
+    }
+
+    /**
      * Группирует системы по платформам
      */
     fun groupByPlatform(systems: List<System>): Map<String, List<System>> {
         return systems.groupBy { it.platform }
-    }
-
-    /**
-     * Возвращает общее количество платформ
-     */
-    fun getTotalPlatformCount(regions: List<Region>): Int {
-        return regions.sumOf { it.platforms.size }
     }
 }

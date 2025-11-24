@@ -126,13 +126,12 @@ class ConnectionRouter {
             return "external"
         }
         
-        // Проверяем регионы
+        // Проверяем платформы (без регионов)
         val connectionType = when {
-            source.region != target.region -> "inter-region"
             source.platform != target.platform -> "inter-platform"
             else -> "intra-platform"
         }
-        
+
         return connectionType
     }
 

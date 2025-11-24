@@ -13,17 +13,10 @@ import com.businessarch.generator.modules.SpatialAnalysisResult
  */
 interface LayoutStrategy {
     /**
-     * Применяет компоновку к списку регионов
-     * @param regions Список регионов для размещения
+     * Применяет компоновку к списку платформ
+     * @param platforms Список платформ для размещения
      */
-    fun applyLayout(regions: List<Region>)
-
-    /**
-     * Размещает системы без региона
-     * @param systems Системы без региона
-     * @param regions Существующие регионы для определения позиции
-     */
-    fun layoutSystemsWithoutRegion(systems: List<System>, regions: List<Region>)
+    fun applyLayout(platforms: List<Platform>)
 }
 
 /**
@@ -57,14 +50,14 @@ interface DataProcessor {
      * @param data Сырые данные из JSON
      * @return Обработанные данные для генерации диаграммы
      */
-    fun processBusinessData(data: BusinessData): ParsedBusinessData
+    fun processBusinessData(data: ArchResult): ParsedBusinessData
 
     /**
      * Валидирует корректность входных данных
      * @param data Данные для валидации
      * @return Результат валидации с ошибками, если есть
      */
-    fun validateData(data: BusinessData): ValidationResult
+    fun validateData(data: ArchResult): ValidationResult
 }
 
 /**

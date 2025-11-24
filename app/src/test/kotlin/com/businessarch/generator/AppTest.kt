@@ -15,36 +15,34 @@ class AppTest {
         val generator = BusinessArchitectureGenerator()
         
         // Создаем тестовые данные
-        val testData = BusinessData(
+        val testData = ArchResult(
+            Var = emptyMap(),
             AS = listOf(
-                AutomatedSystem(
+                AsObject(
                     id = "test1",
                     name = "Тестовая система 1",
                     platform = "Тестовая платформа",
-                    region = "Тестовый регион",
                     role = listOf("test")
                 ),
-                AutomatedSystem(
-                    id = "test2", 
+                AsObject(
+                    id = "test2",
                     name = "Тестовая система 2",
                     platform = "Тестовая платформа",
-                    region = "Тестовый регион",
                     role = listOf("test")
                 )
             ),
-            Function = listOf(
-                BusinessFunction(
+            function = listOf(
+                FunctionObject(
                     id = "f1",
                     name = "Тестовая функция",
-                    type = "test",
-                    AS = "Тестовая система 1"
+                    asName = "Тестовая система 1"
                 )
             ),
-            Link = listOf(
-                SystemLink(
-                    source = LinkTarget(AS = "Тестовая система 1"),
-                    target = LinkTarget(AS = "Тестовая система 2"),
-                    description = "Тестовая связь"
+            link = listOf(
+                LinkObject(
+                    id = "l1",
+                    source = LinkEnd(type = "AS", name = "Тестовая система 1"),
+                    target = LinkEnd(type = "AS", name = "Тестовая система 2")
                 )
             )
         )
@@ -59,7 +57,7 @@ class AppTest {
         val data = result.data!!
         assertEquals(2, data.stats.systems, "Должно быть 2 системы")
         assertEquals(1, data.stats.connections, "Должна быть 1 связь")
-        assertEquals(1, data.stats.regions, "Должен быть 1 регион")
+        assertEquals(0, data.stats.regions, "Регионы больше не используются")
         assertTrue(data.svg.isNotEmpty(), "SVG не должен быть пустым")
         assertTrue(data.svg.contains("<svg"), "SVG должен содержать тег svg")
     }
@@ -68,31 +66,30 @@ class AppTest {
     fun `test data parser`() {
         val parser = com.businessarch.generator.modules.DataParser()
         
-        val testData = BusinessData(
+        val testData = ArchResult(
+            Var = emptyMap(),
             AS = listOf(
-                AutomatedSystem(
+                AsObject(
                     id = "sys1",
                     name = "Система 1",
-                    platform = "Платформа А",
-                    region = "Регион 1"
+                    platform = "Платформа А"
                 )
             ),
-            Function = listOf(
-                BusinessFunction(
+            function = listOf(
+                FunctionObject(
                     id = "func1",
                     name = "Функция 1",
-                    AS = "Система 1"
+                    asName = "Система 1"
                 )
             ),
-            Link = emptyList()
+            link = emptyList()
         )
-        
+
         val result = parser.parseBusinessData(testData)
-        
-        assertEquals(1, result.regions.size, "Должен быть 1 регион")
+
+        assertEquals(1, result.platforms.size, "Должна быть 1 платформа")
         assertEquals(1, result.systemMap.size, "Должна быть 1 система")
         assertEquals(0, result.connections.size, "Должно быть 0 связей")
-        assertTrue(result.systemsWithoutRegion.isEmpty(), "Не должно быть систем без региона")
     }
     
     @Test
